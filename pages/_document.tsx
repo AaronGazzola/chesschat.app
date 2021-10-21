@@ -26,7 +26,7 @@ class MyDocument extends Document {
 					/>
 					<link rel='manifest' href='/manifest.json' />
 				</Head>
-				<body className='bg-background'>
+				<body className='bg-gray-50'>
 					<Main />
 					<NextScript />
 				</body>
