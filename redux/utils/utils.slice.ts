@@ -8,6 +8,9 @@ interface UtilsState {
 	footerHeight: number;
 	minDrawerWidth: number;
 	maxDrawerWidth: number;
+	chessboardWidth: number;
+	screenIsHorizontal: boolean;
+	chatIsOpen: boolean;
 }
 
 const initialState: UtilsState = {
@@ -17,17 +20,27 @@ const initialState: UtilsState = {
 	headerHeight: 56,
 	footerHeight: 112,
 	minDrawerWidth: 36,
-	maxDrawerWidth: 147
+	maxDrawerWidth: 147,
+	chessboardWidth: 0,
+	screenIsHorizontal: true,
+	chatIsOpen: false
 };
 
 const utilsSlice = createSlice({
 	name: 'utils',
 	initialState,
 	reducers: {
-		setDimensions: (state, action) => (state = { ...state, ...action.payload })
+		setDimensions: (state, action) => (state = { ...state, ...action.payload }),
+		setChessboardwidth(state, action) {
+			state.chessboardWidth = action.payload;
+		},
+		toggleChatIsOpen(state) {
+			state.chatIsOpen = !state.chatIsOpen;
+		}
 	}
 });
 
-export const { setDimensions } = utilsSlice.actions;
+export const { setDimensions, setChessboardwidth, toggleChatIsOpen } =
+	utilsSlice.actions;
 
 export default utilsSlice.reducer;

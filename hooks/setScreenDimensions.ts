@@ -38,7 +38,8 @@ const setScreenDimensions = () => {
 					screenWidth: width,
 					screenHeight: height,
 					headerHeight: breakpoint === 'xs' ? 56 : 82,
-					breakpoint
+					breakpoint,
+					screenIsHorizontal: width > height
 				})
 			);
 		};
