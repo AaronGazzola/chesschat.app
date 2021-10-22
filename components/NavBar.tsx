@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import SVG from '../components/SVG';
 import { toggleChatIsOpen } from '../redux/utils/utils.slice';
+import { useMounted } from '../hooks/useMounted';
 
 const NavBar = () => {
 	const dispatch = useAppDispatch();
@@ -12,10 +13,20 @@ const NavBar = () => {
 		chatIsOpen,
 		chessboardWidth
 	} = useAppSelector(state => state.utils);
+	const [deviceIsTouch, setDeviceIsTouch] = useState<boolean>(false);
+	const mounted = useMounted();
 
 	const clickhandler = (name: string) => {
 		if (name === 'chat' || chatIsOpen) dispatch(toggleChatIsOpen());
 	};
+
+	useEffect(() => {
+		if (mounted && !deviceIsTouch) {
+			const touchDeviceHandler = () => setDeviceIsTouch(true);
+			window.addEventListener('touchstart', touchDeviceHandler);
+			return () => window.removeEventListener('touchstart', touchDeviceHandler);
+		}
+	}, [mounted]);
 	return (
 		<div
 			className={`absolute bg-blue flex shadow-sm transform   
@@ -37,17 +48,17 @@ const NavBar = () => {
 					return <React.Fragment key={name}></React.Fragment>;
 				return (
 					<div
-						className={`m-0.5 p-0.5 sm:p-1.5 rounded-full group hover:bg-blue-light ${
-							chatIsOpen && name === 'chat' ? 'bg-blue-light' : ''
-						}`}
+						className={`m-0.5 p-0.5 sm:p-1.5 rounded-full ${
+							!deviceIsTouch ? 'group hover:bg-gray-100' : ''
+						} ${chatIsOpen && name === 'chat' ? 'bg-gray-100' : ''}`}
 						key={name}
 						onClick={() => clickhandler(name)}
 					>
 						<SVG
 							name={name}
 							classes={`rounded-full fill-current ${
-								chatIsOpen && name === 'chat' ? 'text-blue-dark' : 'text-white'
-							} group-hover:text-blue-dark`}
+								chatIsOpen && name === 'chat' ? 'text-blue' : 'text-white'
+							} group-hover:text-blue`}
 						/>
 					</div>
 				);
