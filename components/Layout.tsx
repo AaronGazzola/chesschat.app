@@ -19,10 +19,10 @@ const Layout = (props: LayoutProps) => {
 		<main className='fixed top-0 left-0 bottom-0 right-0 flex justify-center items-center'>
 			<div
 				className={`relative flex h-screen overflow-visible items-center justify-start w-full flex-nowrap
-		${screenIsHorizontal ? 'flex-row pb-0 pl-16' : 'flex-col-reverse pb-10 '}`}
+		${screenIsHorizontal ? 'flex-row pb-0 pl-16' : 'flex-col-reverse pb-10'}`}
 				style={{
 					maxWidth: screenIsHorizontal ? chessboardWidth * 2 + 138 : '',
-					maxHeight: !screenIsHorizontal ? chessboardWidth * 2 + 128 : ''
+					maxHeight: !screenIsHorizontal ? chessboardWidth * 2 + 60 : ''
 				}}
 			>
 				<Meta />

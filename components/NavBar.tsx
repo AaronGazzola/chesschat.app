@@ -32,10 +32,10 @@ const NavBar = () => {
 			{['userCircle', 'users', 'chart', 'pulse', 'chat'].map(name => {
 				if (
 					(screenIsHorizontal &&
-						screenWidth > chessboardWidth * 2 + 138 &&
+						screenWidth > chessboardWidth * 2 + 100 &&
 						name === 'chat') ||
 					(!screenIsHorizontal &&
-						screenHeight > chessboardWidth * 2 + 128 &&
+						screenHeight > chessboardWidth * 2 + 60 &&
 						name === 'chat')
 				)
 					return <React.Fragment key={name}></React.Fragment>;
