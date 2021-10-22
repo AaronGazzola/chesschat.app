@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import SVG from '../components/SVG';
 import { toggleChatIsOpen } from '../redux/utils/utils.slice';
 import { useMounted } from '../hooks/useMounted';
+import { useDeviceIsTouch } from '../hooks/useDeviceIsTouch';
 
 const NavBar = () => {
 	const dispatch = useAppDispatch();
@@ -13,20 +14,12 @@ const NavBar = () => {
 		chatIsOpen,
 		chessboardWidth
 	} = useAppSelector(state => state.utils);
-	const [deviceIsTouch, setDeviceIsTouch] = useState<boolean>(false);
-	const mounted = useMounted();
+	const deviceIsTouch = useDeviceIsTouch();
 
 	const clickhandler = (name: string) => {
 		if (name === 'chat' || chatIsOpen) dispatch(toggleChatIsOpen());
 	};
 
-	useEffect(() => {
-		if (mounted && !deviceIsTouch) {
-			const touchDeviceHandler = () => setDeviceIsTouch(true);
-			window.addEventListener('touchstart', touchDeviceHandler);
-			return () => window.removeEventListener('touchstart', touchDeviceHandler);
-		}
-	}, [mounted]);
 	return (
 		<div
 			className={`absolute bg-blue flex shadow-sm transform   
