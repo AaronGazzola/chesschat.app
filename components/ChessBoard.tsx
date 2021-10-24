@@ -131,7 +131,6 @@ export const ChessBoard = (props: ChessBoardProps) => {
 	const startMove = (x: number, y: number) => {
 		if (!isPlayersTurn) return;
 		setMoveMade(false);
-		setDragging(true);
 		const rowColumnPosition = getRowColumnPosition(x, y);
 		if (
 			(playerIsWhite &&
@@ -141,9 +140,13 @@ export const ChessBoard = (props: ChessBoardProps) => {
 			(!playerIsWhite &&
 				positions[rowColumnPosition.row][rowColumnPosition.column].startsWith(
 					'W'
-				))
+				)) ||
+			['E', 'P'].includes(
+				positions[rowColumnPosition.row][rowColumnPosition.column]
+			)
 		)
 			return;
+		setDragging(true);
 		setFromPosition(rowColumnPosition);
 		setGhostPosition(getXYPosition(x, y));
 	};
@@ -299,9 +302,6 @@ export const ChessBoard = (props: ChessBoardProps) => {
 											pieceID={
 												fromPosition?.row === row &&
 												fromPosition?.column === column &&
-												!['E', 'P'].includes(
-													positions[fromPosition.row][fromPosition.column]
-												) &&
 												(moveMade || dragging)
 													? Previous
 													: positions[row][column]
