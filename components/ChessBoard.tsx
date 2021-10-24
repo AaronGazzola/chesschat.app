@@ -106,21 +106,12 @@ export const ChessBoard = (props: ChessBoardProps) => {
 
 	const chessPieceWidth = (chessboardWidth / 8) * 0.6;
 
-	// function touchMoveHandler(this: HTMLDivElement, e: TouchEvent) {
-	// 	if (!containerRef.current) return;
-	// 	const rect = containerRef.current.getBoundingClientRect();
-	// 	setGhostPosition({
-	// 		top: e.targetTouches[0].clientY - rect.top - 8 - chessPieceWidth / 2,
-	// 		left: e.targetTouches[0].clientX - rect.left - 8 - chessPieceWidth / 2
-	// 	});
-	// }
-
 	const touchMoveHandler: TouchEventHandler<HTMLElement> = e => {
 		if (!containerRef.current) return;
 		const rect = containerRef.current.getBoundingClientRect();
 		setGhostPosition({
-			top: e.targetTouches[0].clientY - rect.top - 8 - chessPieceWidth / 2,
-			left: e.targetTouches[0].clientX - rect.left - 8 - chessPieceWidth / 2
+			top: e.targetTouches[0].clientY - rect.top - 16 - chessPieceWidth / 2,
+			left: e.targetTouches[0].clientX - rect.left - 16 - chessPieceWidth / 2
 		});
 	};
 	const touchEndHandler: TouchEventHandler<HTMLElement> = e => {
@@ -132,20 +123,20 @@ export const ChessBoard = (props: ChessBoardProps) => {
 		setDragging(true);
 		const rect = containerRef.current.getBoundingClientRect();
 		setFromPosition({
-			row: Math.floor(
-				((e.targetTouches[0].clientY - rect.top - 8 - chessPieceWidth / 2) /
+			row: Math.round(
+				((e.targetTouches[0].clientY - rect.top - 16 - chessPieceWidth / 2) /
 					chessboardWidth) *
 					8
 			),
-			column: Math.floor(
-				((e.targetTouches[0].clientX - rect.left - 8 - chessPieceWidth / 2) /
+			column: Math.round(
+				((e.targetTouches[0].clientX - rect.left - 16 - chessPieceWidth / 2) /
 					chessboardWidth) *
 					8
 			)
 		});
 		setGhostPosition({
-			top: e.targetTouches[0].clientY - rect.top - 8 - chessPieceWidth / 2,
-			left: e.targetTouches[0].clientX - rect.left - 8 - chessPieceWidth / 2
+			top: e.targetTouches[0].clientY - rect.top - 16 - chessPieceWidth / 2,
+			left: e.targetTouches[0].clientX - rect.left - 16 - chessPieceWidth / 2
 		});
 	};
 
@@ -154,17 +145,18 @@ export const ChessBoard = (props: ChessBoardProps) => {
 		setDragging(true);
 		const rect = containerRef.current.getBoundingClientRect();
 		setFromPosition({
-			row: Math.floor(
-				((e.clientY - rect.top - 8 - chessPieceWidth / 2) / chessboardWidth) * 8
+			row: Math.round(
+				((e.clientY - rect.top - 16 - chessPieceWidth / 2) / chessboardWidth) *
+					8
 			),
-			column: Math.floor(
-				((e.clientX - rect.left - 8 - chessPieceWidth / 2) / chessboardWidth) *
+			column: Math.round(
+				((e.clientX - rect.left - 16 - chessPieceWidth / 2) / chessboardWidth) *
 					8
 			)
 		});
 		setGhostPosition({
-			top: e.clientY - rect.top - 8 - chessPieceWidth / 2,
-			left: e.clientX - rect.left - 8 - chessPieceWidth / 2
+			top: e.clientY - rect.top - 16 - chessPieceWidth / 2,
+			left: e.clientX - rect.left - 16 - chessPieceWidth / 2
 		});
 		setDragging(true);
 	};
@@ -173,8 +165,8 @@ export const ChessBoard = (props: ChessBoardProps) => {
 		if (!containerRef.current) return;
 		const rect = containerRef.current.getBoundingClientRect();
 		setGhostPosition({
-			top: e.clientY - rect.top - 8 - chessPieceWidth / 2,
-			left: e.clientX - rect.left - 8 - chessPieceWidth / 2
+			top: e.clientY - rect.top - 16 - chessPieceWidth / 2,
+			left: e.clientX - rect.left - 16 - chessPieceWidth / 2
 		});
 	};
 
