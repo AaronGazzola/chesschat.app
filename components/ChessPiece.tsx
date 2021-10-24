@@ -34,12 +34,21 @@ const ChessPiece = (props: ChessPieceProps) => {
 				return 'whitePawn';
 			case 'BP':
 				return 'blackPawn';
+			case 'P':
+				return 'circle';
 			default:
 				return '';
 		}
 	};
 	if (pieceID === 'E') {
 		return <></>;
+	} else if (pieceID === 'P') {
+		return (
+			<SVG
+				name={getName(pieceID)}
+				classes='fill-current text-blue-dark w-11/2 h-11/12'
+			/>
+		);
 	} else {
 		return (
 			<SVG

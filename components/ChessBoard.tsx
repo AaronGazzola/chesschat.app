@@ -6,7 +6,6 @@ import React, {
 	useRef,
 	useState
 } from 'react';
-import { useMounted } from '../hooks/useMounted';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setChessboardwidth } from '../redux/utils/utils.slice';
 import ChessPiece from './ChessPiece';
@@ -26,7 +25,8 @@ export enum PieceID {
 	BlackKnight = 'BH',
 	BlackCastle = 'BC',
 	BlackPawn = 'BP',
-	Empty = 'E'
+	Empty = 'E',
+	Previous = 'P'
 }
 const {
 	WhiteKing,
@@ -41,7 +41,8 @@ const {
 	BlackKnight,
 	BlackCastle,
 	BlackPawn,
-	Empty
+	Empty,
+	Previous
 } = PieceID;
 
 const whiteFirstRow: PieceID[] = [
@@ -71,18 +72,17 @@ const whitePawnRow: PieceID[] = Array.from(Array(8).keys()).map(
 	square => WhitePawn
 );
 
-interface XYPosition {
+export interface XYPosition {
 	x: number;
 	y: number;
 }
-interface RowColumnPosition {
+export interface RowColumnPosition {
 	row: number;
 	column: number;
 }
 
 export const ChessBoard = (props: ChessBoardProps) => {
 	const dispatch = useAppDispatch();
-	const mounted = useMounted();
 	const { screenWidth, screenHeight, screenIsHorizontal, chessboardWidth } =
 		useAppSelector(state => state.utils);
 	const { playerIsWhite } = useAppSelector(state => state.game);
@@ -98,6 +98,8 @@ export const ChessBoard = (props: ChessBoardProps) => {
 		y: 0
 	});
 	const [dragging, setDragging] = useState<boolean>(false);
+	const [moveMade, setMoveMade] = useState<boolean>(false);
+	const [isPlayersTurn, setIsPlayersTurn] = useState<boolean>(true);
 
 	let initialState = Array.from(Array(8).keys()).map(row =>
 		Array.from(Array(8).keys()).map(column => Empty)
@@ -126,17 +128,46 @@ export const ChessBoard = (props: ChessBoardProps) => {
 		};
 	};
 
-	const touchStartHandler: TouchEventHandler<HTMLDivElement> = e => {
+	const startMove = (x: number, y: number) => {
+		if (!isPlayersTurn) return;
+		setMoveMade(false);
 		setDragging(true);
-		setFromPosition(
-			getRowColumnPosition(
-				e.targetTouches[0].clientX,
-				e.targetTouches[0].clientY
-			)
-		);
-		setGhostPosition(
-			getXYPosition(e.targetTouches[0].clientX, e.targetTouches[0].clientY)
-		);
+		const rowColumnPosition = getRowColumnPosition(x, y);
+		if (
+			(playerIsWhite &&
+				positions[rowColumnPosition.row][rowColumnPosition.column].startsWith(
+					'B'
+				)) ||
+			(!playerIsWhite &&
+				positions[rowColumnPosition.row][rowColumnPosition.column].startsWith(
+					'W'
+				))
+		)
+			return;
+		setFromPosition(rowColumnPosition);
+		setGhostPosition(getXYPosition(x, y));
+	};
+
+	const endMove = (x: number, y: number) => {
+		setDragging(false);
+		const newToPosition = getRowColumnPosition(x, y);
+		console.log(JSON.stringify(fromPosition) === JSON.stringify(newToPosition));
+		if (
+			!fromPosition ||
+			JSON.stringify(fromPosition) === JSON.stringify(newToPosition)
+		)
+			return;
+		setToPosition(newToPosition);
+		let newPositions = [...positions.map(row => [...row])];
+		newPositions[fromPosition.row][fromPosition.column] = Empty;
+		newPositions[newToPosition.row][newToPosition.column] =
+			positions[fromPosition.row][fromPosition.column];
+		setPositions(newPositions);
+		setMoveMade(true);
+	};
+
+	const touchStartHandler: TouchEventHandler<HTMLDivElement> = e => {
+		startMove(e.targetTouches[0].clientX, e.targetTouches[0].clientY);
 	};
 
 	const touchMoveHandler: TouchEventHandler<HTMLElement> = e => {
@@ -145,13 +176,11 @@ export const ChessBoard = (props: ChessBoardProps) => {
 		);
 	};
 	const touchEndHandler: TouchEventHandler<HTMLElement> = e => {
-		setDragging(false);
+		endMove(e.targetTouches[0].clientX, e.targetTouches[0].clientY);
 	};
 
 	const mouseDownHandler: MouseEventHandler<HTMLElement> = e => {
-		setDragging(true);
-		setFromPosition(getRowColumnPosition(e.clientX, e.clientY));
-		setGhostPosition(getXYPosition(e.clientX, e.clientY));
+		startMove(e.clientX, e.clientY);
 	};
 
 	const mouseMoveHandler: MouseEventHandler<HTMLDivElement> = e => {
@@ -159,7 +188,7 @@ export const ChessBoard = (props: ChessBoardProps) => {
 	};
 
 	const mouseUpHandler: MouseEventHandler<HTMLDivElement> = e => {
-		setDragging(false);
+		endMove(e.clientX, e.clientY);
 	};
 
 	const resetBoardHandler = () => {
@@ -229,9 +258,16 @@ export const ChessBoard = (props: ChessBoardProps) => {
 								<div
 									key={`${row}X${column}`}
 									className={`flex items-center justify-center ${
-										row % 2 && column % 2
-											? 'bg-orange'
-											: !(row % 2) && !(column % 2)
+										toPosition?.row === row &&
+										toPosition?.column === column &&
+										moveMade &&
+										((!(row % 2) && !(column % 2)) || (row % 2 && column % 2))
+											? 'bg-orange-light'
+											: toPosition?.row === row &&
+											  toPosition?.column === column &&
+											  moveMade
+											? 'bg-blue-light'
+											: (!(row % 2) && !(column % 2)) || (row % 2 && column % 2)
 											? 'bg-orange'
 											: ''
 									}`}
@@ -239,7 +275,12 @@ export const ChessBoard = (props: ChessBoardProps) => {
 										width: '12.5%',
 										height: '12.5%',
 										cursor:
-											positions[row][column] === 'E'
+											positions[row][column] === 'E' ||
+											(playerIsWhite &&
+												positions[row][column].startsWith('B')) ||
+											(!playerIsWhite &&
+												positions[row][column].startsWith('W')) ||
+											!isPlayersTurn
 												? 'default'
 												: dragging
 												? 'grabbing'
@@ -247,19 +288,21 @@ export const ChessBoard = (props: ChessBoardProps) => {
 									}}
 								>
 									<div
-										className={`${
-											dragging &&
-											fromPosition?.row === row &&
-											fromPosition?.column === column
-												? 'opacity-0'
-												: ''
-										}`}
+										className='flex items-center justify-center'
 										style={{
 											width: '60%',
 											height: '60%'
 										}}
 									>
-										<ChessPiece pieceID={positions[row][column]} />
+										<ChessPiece
+											pieceID={
+												fromPosition?.row === row &&
+												fromPosition?.column === column &&
+												(moveMade || dragging)
+													? Previous
+													: positions[row][column]
+											}
+										/>
 									</div>
 								</div>
 							));
