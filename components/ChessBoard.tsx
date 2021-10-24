@@ -72,8 +72,8 @@ const whitePawnRow: PieceID[] = Array.from(Array(8).keys()).map(
 );
 
 interface XYPosition {
-	left: number;
-	top: number;
+	x: number;
+	y: number;
 }
 interface RowColumnPosition {
 	row: number;
@@ -94,8 +94,8 @@ export const ChessBoard = (props: ChessBoardProps) => {
 	);
 	const [toPosition, setToPosition] = useState<RowColumnPosition | null>(null);
 	const [ghostPosition, setGhostPosition] = useState<XYPosition>({
-		left: 0,
-		top: 0
+		x: 0,
+		y: 0
 	});
 	const [dragging, setDragging] = useState<boolean>(false);
 
@@ -104,70 +104,58 @@ export const ChessBoard = (props: ChessBoardProps) => {
 	);
 	const [positions, setPositions] = useState<PieceID[][]>(initialState);
 
-	const chessPieceWidth = (chessboardWidth / 8) * 0.6;
+	const squareWidth = chessboardWidth / 8;
+	const chessPieceWidth = squareWidth * 0.6;
+
+	const getXYPosition = (x: number, y: number): XYPosition => {
+		if (!containerRef.current || !chessBoardRef.current)
+			return { x: -1, y: -1 };
+		const rect = containerRef.current.getBoundingClientRect();
+		return {
+			x: x - rect.left - 16 - chessPieceWidth / 2,
+			y: y - rect.top - 16 - chessPieceWidth / 2
+		};
+	};
+	const getRowColumnPosition = (x: number, y: number): RowColumnPosition => {
+		if (!containerRef.current || !chessBoardRef.current)
+			return { row: -1, column: -1 };
+		const rect = containerRef.current.getBoundingClientRect();
+		return {
+			row: Math.floor((y - rect.top - 16) / squareWidth),
+			column: Math.floor((x - rect.left - 16) / squareWidth)
+		};
+	};
+
+	const touchStartHandler: TouchEventHandler<HTMLDivElement> = e => {
+		setDragging(true);
+		setFromPosition(
+			getRowColumnPosition(
+				e.targetTouches[0].clientX,
+				e.targetTouches[0].clientY
+			)
+		);
+		setGhostPosition(
+			getXYPosition(e.targetTouches[0].clientX, e.targetTouches[0].clientY)
+		);
+	};
 
 	const touchMoveHandler: TouchEventHandler<HTMLElement> = e => {
-		if (!containerRef.current) return;
-		const rect = containerRef.current.getBoundingClientRect();
-		setGhostPosition({
-			top: e.targetTouches[0].clientY - rect.top - 16 - chessPieceWidth / 2,
-			left: e.targetTouches[0].clientX - rect.left - 16 - chessPieceWidth / 2
-		});
+		setGhostPosition(
+			getXYPosition(e.targetTouches[0].clientX, e.targetTouches[0].clientY)
+		);
 	};
 	const touchEndHandler: TouchEventHandler<HTMLElement> = e => {
 		setDragging(false);
 	};
 
-	const touchStartHandler: TouchEventHandler<HTMLDivElement> = e => {
-		if (!containerRef.current || !chessBoardRef.current) return;
-		setDragging(true);
-		const rect = containerRef.current.getBoundingClientRect();
-		setFromPosition({
-			row: Math.round(
-				((e.targetTouches[0].clientY - rect.top - 16 - chessPieceWidth / 2) /
-					chessboardWidth) *
-					8
-			),
-			column: Math.round(
-				((e.targetTouches[0].clientX - rect.left - 16 - chessPieceWidth / 2) /
-					chessboardWidth) *
-					8
-			)
-		});
-		setGhostPosition({
-			top: e.targetTouches[0].clientY - rect.top - 16 - chessPieceWidth / 2,
-			left: e.targetTouches[0].clientX - rect.left - 16 - chessPieceWidth / 2
-		});
-	};
-
 	const mouseDownHandler: MouseEventHandler<HTMLElement> = e => {
-		if (!containerRef.current || !chessBoardRef.current) return;
 		setDragging(true);
-		const rect = containerRef.current.getBoundingClientRect();
-		setFromPosition({
-			row: Math.round(
-				((e.clientY - rect.top - 16 - chessPieceWidth / 2) / chessboardWidth) *
-					8
-			),
-			column: Math.round(
-				((e.clientX - rect.left - 16 - chessPieceWidth / 2) / chessboardWidth) *
-					8
-			)
-		});
-		setGhostPosition({
-			top: e.clientY - rect.top - 16 - chessPieceWidth / 2,
-			left: e.clientX - rect.left - 16 - chessPieceWidth / 2
-		});
-		setDragging(true);
+		setFromPosition(getRowColumnPosition(e.clientX, e.clientY));
+		setGhostPosition(getXYPosition(e.clientX, e.clientY));
 	};
 
 	const mouseMoveHandler: MouseEventHandler<HTMLDivElement> = e => {
-		if (!containerRef.current) return;
-		const rect = containerRef.current.getBoundingClientRect();
-		setGhostPosition({
-			top: e.clientY - rect.top - 16 - chessPieceWidth / 2,
-			left: e.clientX - rect.left - 16 - chessPieceWidth / 2
-		});
+		setGhostPosition(getXYPosition(e.clientX, e.clientY));
 	};
 
 	const mouseUpHandler: MouseEventHandler<HTMLDivElement> = e => {
@@ -218,8 +206,7 @@ export const ChessBoard = (props: ChessBoardProps) => {
 					onMouseUp={mouseUpHandler}
 					className='relative w-full flex-shrink-0'
 					style={{
-						paddingTop: '100%',
-						cursor: dragging ? 'grab' : ''
+						paddingTop: '100%'
 					}}
 				>
 					{dragging && fromPosition && (
@@ -228,7 +215,7 @@ export const ChessBoard = (props: ChessBoardProps) => {
 							style={{
 								width: chessPieceWidth,
 								height: chessPieceWidth,
-								transform: `translate(${ghostPosition.left}px, ${ghostPosition.top}px)`
+								transform: `translate(${ghostPosition.x}px, ${ghostPosition.y}px)`
 							}}
 						>
 							<ChessPiece
@@ -248,19 +235,29 @@ export const ChessBoard = (props: ChessBoardProps) => {
 											? 'bg-orange'
 											: ''
 									}`}
-									style={{ width: '12.5%', height: '12.5%' }}
+									style={{
+										width: '12.5%',
+										height: '12.5%',
+										cursor:
+											positions[row][column] === 'E'
+												? 'default'
+												: dragging
+												? 'grabbing'
+												: 'grab'
+									}}
 								>
 									<div
 										className={`${
-											positions[row][column] === 'E' ? '' : 'cursor-pointer'
-										} ${
 											dragging &&
 											fromPosition?.row === row &&
 											fromPosition?.column === column
 												? 'opacity-0'
 												: ''
 										}`}
-										style={{ width: '60%', height: '60%' }}
+										style={{
+											width: '60%',
+											height: '60%'
+										}}
 									>
 										<ChessPiece pieceID={positions[row][column]} />
 									</div>
