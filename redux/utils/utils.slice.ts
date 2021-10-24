@@ -11,6 +11,7 @@ interface UtilsState {
 	chessboardWidth: number;
 	screenIsHorizontal: boolean;
 	chatIsOpen: boolean;
+	deviceIsTouch: boolean;
 }
 
 const initialState: UtilsState = {
@@ -23,7 +24,8 @@ const initialState: UtilsState = {
 	maxDrawerWidth: 147,
 	chessboardWidth: 0,
 	screenIsHorizontal: true,
-	chatIsOpen: false
+	chatIsOpen: false,
+	deviceIsTouch: false
 };
 
 const utilsSlice = createSlice({
@@ -36,11 +38,18 @@ const utilsSlice = createSlice({
 		},
 		toggleChatIsOpen(state) {
 			state.chatIsOpen = !state.chatIsOpen;
+		},
+		setDeviceIstouch(state, action) {
+			state.deviceIsTouch = action.payload;
 		}
 	}
 });
 
-export const { setDimensions, setChessboardwidth, toggleChatIsOpen } =
-	utilsSlice.actions;
+export const {
+	setDimensions,
+	setChessboardwidth,
+	toggleChatIsOpen,
+	setDeviceIstouch
+} = utilsSlice.actions;
 
 export default utilsSlice.reducer;

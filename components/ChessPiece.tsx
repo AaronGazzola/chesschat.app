@@ -44,8 +44,7 @@ const ChessPiece = (props: ChessPieceProps) => {
 		return (
 			<SVG
 				name={getName(pieceID)}
-				classes='fill-current text-blue-dark'
-				style={{ width: '60%', height: '60%' }}
+				classes='fill-current text-blue-dark w-full h-full'
 			/>
 		);
 	}
