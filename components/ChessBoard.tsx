@@ -154,7 +154,8 @@ export const ChessBoard = (props: ChessBoardProps) => {
 		console.log(JSON.stringify(fromPosition) === JSON.stringify(newToPosition));
 		if (
 			!fromPosition ||
-			JSON.stringify(fromPosition) === JSON.stringify(newToPosition)
+			JSON.stringify(fromPosition) === JSON.stringify(newToPosition) ||
+			['E', 'P'].includes(positions[fromPosition.row][fromPosition.column])
 		)
 			return;
 		setToPosition(newToPosition);
@@ -298,6 +299,9 @@ export const ChessBoard = (props: ChessBoardProps) => {
 											pieceID={
 												fromPosition?.row === row &&
 												fromPosition?.column === column &&
+												!['E', 'P'].includes(
+													positions[fromPosition.row][fromPosition.column]
+												) &&
 												(moveMade || dragging)
 													? Previous
 													: positions[row][column]
