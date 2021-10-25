@@ -154,7 +154,6 @@ export const ChessBoard = (props: ChessBoardProps) => {
 	const endMove = (x: number, y: number) => {
 		setDragging(false);
 		const newToPosition = getRowColumnPosition(x, y);
-		console.log(JSON.stringify(fromPosition) === JSON.stringify(newToPosition));
 		if (
 			!fromPosition ||
 			JSON.stringify(fromPosition) === JSON.stringify(newToPosition) ||

@@ -16,7 +16,7 @@ const PageLayout = (props: PageLayoutProps) => {
 			</Link>
 			<div className='max-w-2xl w-full p-4 z-20'>
 				<div
-					className='border-2 border-blue rounded-lg relative bg-gray-100 overflow-y-auto p-2'
+					className='border-2 border-blue rounded-lg relative bg-gray-100 overflow-y-auto overflow-x-hidden p-2'
 					style={{ minHeight: 48, maxHeight: 'calc(var(--vh) * 100)' }}
 				>
 					<Link href='/'>

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/dist/client/router';
 
 const navList = [
-	{ href: '/login', name: 'userCircle' },
+	{ href: '/signup', name: 'userCircle' },
 	{ href: '/friends', name: 'users' },
 	{ href: '/stats', name: 'chart' },
 	{ href: '/games', name: 'pulse' },

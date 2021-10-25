@@ -9,7 +9,6 @@ const UserFeedback = () => {
 	);
 	const success = gameSuccess;
 	const error = gameError;
-
 	const clearFeedback = useCallback(() => {
 		dispatch(clearGameFeedback());
 	}, [dispatch]);
@@ -41,7 +40,7 @@ const UserFeedback = () => {
 				style={{ background: 'rgba(0,0,0,0.5)' }}
 			>
 				<div className='max-w-sm w-full p-2'>
-					<div className='border-2 border-red-900 shadow-md bg-gray-100 rounded-md w-full p-2'>
+					<div className='shadow-md bg-gray-100 rounded-md w-full p-2'>
 						<h1 className='text-red-800 font-semibold text-2xl p-2 px-4'>
 							{error.title}
 						</h1>
@@ -51,16 +50,11 @@ const UserFeedback = () => {
 						<div className='flex w-full justify-between p-2 mt-2'>
 							{error.retryTrigger && (
 								<>
-									<button className='bg-blue px-4 py-1 text-white rounded-md w-full font-semibold'>
-										Retry
-									</button>
+									<button className='button-blue'>Retry</button>
 									<div className='w-8'></div>
 								</>
 							)}
-							<button
-								onClick={() => clearFeedback()}
-								className='px-4 py-1 bg-green-600 text-white rounded-md w-full font-semibold'
-							>
+							<button onClick={() => clearFeedback()} className='button-green'>
 								OK
 							</button>
 						</div>
