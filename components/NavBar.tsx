@@ -2,10 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import SVG from '../components/SVG';
 import { toggleChatIsOpen } from '../redux/utils/utils.slice';
-import { useMounted } from '../hooks/useMounted';
-import { useDeviceIsTouch } from '../hooks/useDeviceIsTouch';
+import { useIsTouch } from '../hooks/useIsTouch';
+import Link from 'next/link';
+import { useRouter } from 'next/dist/client/router';
+
+const navList = [
+	{ href: '/login', name: 'userCircle' },
+	{ href: '/friends', name: 'users' },
+	{ href: '/stats', name: 'chart' },
+	{ href: '/games', name: 'pulse' },
+	{ href: '', name: 'chat' }
+];
 
 const NavBar = () => {
+	const router = useRouter();
 	const dispatch = useAppDispatch();
 	const {
 		screenWidth,
@@ -14,7 +24,7 @@ const NavBar = () => {
 		chatIsOpen,
 		chessboardWidth
 	} = useAppSelector(state => state.utils);
-	const deviceIsTouch = useDeviceIsTouch();
+	const isTouch = useIsTouch();
 
 	const clickhandler = (name: string) => {
 		if (name === 'chat' || chatIsOpen) dispatch(toggleChatIsOpen());
@@ -29,31 +39,40 @@ const NavBar = () => {
 					: 'top-full left-1/2 rounded-t-lg px-2 pt-1 -translate-y-full -translate-x-1/2'
 			}`}
 		>
-			{['userCircle', 'users', 'chart', 'pulse', 'chat'].map(name => {
+			{navList.map(item => {
 				if (
 					(screenIsHorizontal &&
 						screenWidth > chessboardWidth * 2 + 100 &&
-						name === 'chat') ||
+						item.name === 'chat') ||
 					(!screenIsHorizontal &&
 						screenHeight > chessboardWidth * 2 + 60 &&
-						name === 'chat')
+						item.name === 'chat')
 				)
-					return <React.Fragment key={name}></React.Fragment>;
+					return <React.Fragment key={item.name}></React.Fragment>;
 				return (
-					<div
-						className={`m-0.5 p-0.5 sm:p-1.5 rounded-full ${
-							!deviceIsTouch ? 'group hover:bg-gray-100' : ''
-						} ${chatIsOpen && name === 'chat' ? 'bg-gray-100' : ''}`}
-						key={name}
-						onClick={() => clickhandler(name)}
-					>
-						<SVG
-							name={name}
-							classes={`rounded-full fill-current ${
-								chatIsOpen && name === 'chat' ? 'text-blue' : 'text-white'
-							} group-hover:text-blue`}
-						/>
-					</div>
+					<Link href={item.href} key={item.name}>
+						<button
+							className={`m-0.5 p-0.5 sm:p-1.5 rounded-full ${
+								!isTouch ? 'group hover:bg-gray-100' : ''
+							} ${
+								(chatIsOpen && item.name === 'chat') ||
+								router.pathname === item.href
+									? 'bg-gray-100'
+									: ''
+							}`}
+							onClick={() => clickhandler(item.name)}
+						>
+							<SVG
+								name={item.name}
+								classes={`rounded-full fill-current ${
+									(chatIsOpen && item.name === 'chat') ||
+									router.pathname === item.href
+										? 'text-blue'
+										: 'text-white'
+								} group-hover:text-blue`}
+							/>
+						</button>
+					</Link>
 				);
 			})}
 		</div>

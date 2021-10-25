@@ -1,8 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-interface GameState {
-	playerIsWhite: boolean;
-}
+import { GameState } from './game.interface';
 
 const initialState: GameState = {
 	playerIsWhite: true
@@ -11,7 +8,14 @@ const initialState: GameState = {
 const gameSlice = createSlice({
 	name: 'utils',
 	initialState,
-	reducers: {}
+	reducers: {
+		clearGameFeedback(state) {
+			state.success = null;
+			state.error = null;
+		}
+	}
 });
+
+export const { clearGameFeedback } = gameSlice.actions;
 
 export default gameSlice.reducer;

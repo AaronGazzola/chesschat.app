@@ -5,6 +5,7 @@ import NavBar from './NavBar';
 import { useAppSelector } from '../redux/hooks';
 import { ChessBoard } from './ChessBoard';
 import ChatBox from './ChatBox';
+import UserFeedback from './UserFeedback';
 
 interface LayoutProps {
 	children: React.ReactNode;
@@ -27,6 +28,7 @@ const Layout = (props: LayoutProps) => {
 				}}
 			>
 				<Meta />
+				<UserFeedback />
 				<NavBar />
 				{props.children}
 				<ChessBoard />
