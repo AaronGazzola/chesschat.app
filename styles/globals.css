@@ -88,4 +88,10 @@
 	.disabled {
 		@apply bg-gray-500 cursor-default;
 	}
+	.title {
+		@apply text-3xl text-blue-dark font-semibold px-12 mb-2 w-full text-center;
+	}
+	.body {
+		@apply p-2 font-medium text-gray-900 text-lg;
+	}
 }

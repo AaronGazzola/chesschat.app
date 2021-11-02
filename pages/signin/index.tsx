@@ -52,9 +52,7 @@ const Index = () => {
 			<div className={`flex flex-col items-center`}>
 				{page === 'select' ? (
 					<>
-						<h1 className='text-3xl text-blue-dark font-semibold px-12 mb-2 w-full text-center'>
-							Sign in
-						</h1>
+						<h1 className='title'>Sign in</h1>
 						<div className='flex flex-col w-full max-w-xs p-2'>
 							<button
 								className='button-blue w-full flex justify-between py-2 mb-2'
@@ -86,7 +84,7 @@ const Index = () => {
 					</>
 				) : (
 					<>
-						<h1 className='text-3xl text-blue-dark font-semibold px-12 mb-2 w-full text-center'>
+						<h1 className='title'>
 							{page === 'email-signin' ? 'Sign in' : 'New email account'}
 						</h1>
 						{page === 'email-signup' && (
