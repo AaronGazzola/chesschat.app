@@ -1,3 +1,4 @@
+import { initializeApp } from 'firebase/app';
 import React from 'react';
 import PageLayout from '../components/PageLayout';
 

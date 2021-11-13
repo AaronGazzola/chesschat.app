@@ -11,6 +11,7 @@
   "dependencies": {
     "@mui/styled-engine-sc": "^5.0.3",
     "@reduxjs/toolkit": "^1.6.2",
+    "firebase": "^9.2.0",
     "next": "11.1.2",
     "next-pwa": "^5.4.0",
     "react": "17.0.2",

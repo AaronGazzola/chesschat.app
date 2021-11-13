@@ -67,11 +67,6 @@ const Index = () => {
 								Google
 								<SVG name='google' classes='fill-current' />
 							</button>
-							<button className='button-blue w-full flex justify-between py-2 mb-2'>
-								<div className='w-6'></div>
-								Facebook
-								<SVG name='facebook' classes='fill-current' />
-							</button>
 							<button
 								className='button-blue-outline w-full flex justify-between py-2 mb-2'
 								onClick={() => setPage('email-signup')}
@@ -160,7 +155,7 @@ const Index = () => {
 							}`}
 							onClick={() => setPage(prev => prev + 1)}
 						>
-							Sign up
+							{page === 'email-signin' ? 'Sign in' : 'Sign up'}
 						</button>
 						<div className='w-full max-w-lg'>
 							<button
