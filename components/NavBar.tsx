@@ -1,22 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import SVG from '../components/SVG';
 import { toggleChatIsOpen } from '../redux/utils/utils.slice';
 import { useIsTouch } from '../hooks/useIsTouch';
 import Link from 'next/link';
 import { useRouter } from 'next/dist/client/router';
-
-const navList = [
-	{ href: '/signin', name: 'userCircle' },
-	{ href: '/friends', name: 'users' },
-	{ href: '/stats', name: 'chart' },
-	{ href: '/games', name: 'pulse' },
-	{ href: '', name: 'chat' }
-];
+import useFirebase from '../hooks/useFirebase';
 
 const NavBar = () => {
 	const router = useRouter();
 	const dispatch = useAppDispatch();
+	const { auth } = useFirebase();
 	const {
 		screenWidth,
 		screenHeight,
@@ -30,6 +24,13 @@ const NavBar = () => {
 		if (name === 'chat' || chatIsOpen) dispatch(toggleChatIsOpen());
 	};
 
+	const navList = [
+		{ href: auth.currentUser ? '/profile' : '/signin', name: 'userCircle' },
+		{ href: '/friends', name: 'users' },
+		{ href: '/stats', name: 'chart' },
+		{ href: '/games', name: 'pulse' },
+		{ href: '', name: 'chat' }
+	];
 	return (
 		<div
 			className={`absolute bg-blue flex shadow-sm transform   

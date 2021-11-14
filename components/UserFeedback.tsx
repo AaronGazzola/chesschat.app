@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
+import { clearAuthFeedback } from '../redux/auth/auth.slice';
 import { clearGameFeedback } from '../redux/game/game.slice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 
@@ -7,10 +8,14 @@ const UserFeedback = () => {
 	const { success: gameSuccess, error: gameError } = useAppSelector(
 		state => state.game
 	);
-	const success = gameSuccess;
-	const error = gameError;
+	const { success: authSuccess, error: authError } = useAppSelector(
+		state => state.auth
+	);
+	const success = gameSuccess || authSuccess;
+	const error = gameError || authError;
 	const clearFeedback = useCallback(() => {
 		dispatch(clearGameFeedback());
+		dispatch(clearAuthFeedback());
 	}, [dispatch]);
 
 	useEffect(() => {
@@ -42,18 +47,16 @@ const UserFeedback = () => {
 				<div className='max-w-sm w-full p-2'>
 					<div className='shadow-md bg-gray-100 rounded-md w-full p-2'>
 						<h1 className='text-red-800 font-semibold text-2xl p-2 px-4'>
-							{error.title}
+							{error.title || 'Error'}
 						</h1>
 						<p className='text-gray-800 font-medium text-lg p-2 px-4'>
 							{error.message}
 						</p>
 						<div className='flex w-full justify-between p-2 mt-2'>
 							{error.retryTrigger && (
-								<>
-									<button className='button-blue'>Retry</button>
-									<div className='w-8'></div>
-								</>
+								<button className='button-blue'>Retry</button>
 							)}
+							<div className='w-8'></div>
 							<button onClick={() => clearFeedback()} className='button-green'>
 								OK
 							</button>
@@ -64,7 +67,7 @@ const UserFeedback = () => {
 		);
 	} else if (success) {
 		return (
-			<div className='fixed z-30 bottom-5 left-1/2 transform -translate-x-1/2 bg-green-700 rounded-md py-3 px-6'>
+			<div className='fixed z-30 bottom-5 left-1/2 transform -translate-x-1/2 bg-green-600 rounded-md py-3 px-6'>
 				<p className='text-white font-semibold text-lg'>{success}</p>
 			</div>
 		);

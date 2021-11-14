@@ -1,10 +1,33 @@
-import React, { SyntheticEvent, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import Input from '../../components/Input';
 import PageLayout from '../../components/PageLayout';
 import SVG from '../../components/SVG';
+import { getDatabase, ref, set, get, child } from 'firebase/database';
+import {
+	getAuth,
+	createUserWithEmailAndPassword,
+	signInWithEmailAndPassword,
+	GoogleAuthProvider,
+	signInWithRedirect,
+	FacebookAuthProvider,
+	onAuthStateChanged,
+	getRedirectResult,
+	signOut
+} from 'firebase/auth';
+import { useAppDispatch } from '../../redux/hooks';
+import { authError, authSuccess } from '../../redux/auth/auth.slice';
+import { useRouter } from 'next/dist/client/router';
+import useFirebase from '../../hooks/useFirebase';
 
 const Index = () => {
-	const [page, setPage] = useState<string>('select');
+	const { auth } = useFirebase();
+	const database = getDatabase();
+	const router = useRouter();
+	const dispatch = useAppDispatch();
+	const [page, setPage] = useState<'select' | 'email-signup' | 'email-signin'>(
+		'select'
+	);
+	const [loading, setLoading] = useState<boolean>(false);
 	const [formState, setFormState] = useState({
 		name: {
 			isValid: false,
@@ -27,7 +50,12 @@ const Index = () => {
 	const changeHandler = (e: React.FormEvent<HTMLInputElement>) => {
 		const id = e.currentTarget.id;
 		const value = e.currentTarget.value;
-		let isValid = id === 'email' ? /^\S+@\S+\.\S+$/.test(value) : !!value;
+		let isValid =
+			id === 'email'
+				? /^\S+@\S+\.\S+$/.test(value)
+				: id === 'password'
+				? value.length >= 6
+				: !!value;
 		setFormState(prev => ({
 			...prev,
 			[id]: {
@@ -47,6 +75,62 @@ const Index = () => {
 			}
 		}));
 	};
+
+	const submitHandler = async (e: SyntheticEvent) => {
+		e.preventDefault();
+		if (
+			!email.isValid ||
+			!password.isValid ||
+			(page === 'email-signup' && !name.isValid)
+		)
+			return;
+		if (page === 'email-signup') {
+			setLoading(true);
+			try {
+				const { user } = await createUserWithEmailAndPassword(
+					auth,
+					email.value,
+					password.value
+				);
+				await set(ref(database, `users/${user?.uid}/name`), name.value);
+				dispatch(authSuccess(`Welcome ${name.value}!`));
+			} catch (error) {
+				console.log(error);
+				dispatch(authError(error));
+			} finally {
+				setLoading(false);
+			}
+		} else if (page === 'email-signin') {
+			setLoading(true);
+			try {
+				const { user } = await signInWithEmailAndPassword(
+					auth,
+					email.value,
+					password.value
+				);
+				const snapShot = await get(ref(database, `users/${user?.uid}/name`));
+
+				dispatch(
+					authSuccess(
+						snapShot.exists() ? `Welcome ${snapShot.val()}!` : 'Welcome!'
+					)
+				);
+			} catch (error) {
+				dispatch(authError(error));
+			} finally {
+				setLoading(false);
+			}
+		}
+	};
+
+	// redirect to profile if logged in
+	useEffect(() => {
+		if (auth.currentUser) router.push('/profile');
+	}, []);
+	onAuthStateChanged(auth, user => {
+		if (user) router.push('/profile');
+	});
+
 	return (
 		<PageLayout>
 			<div className={`flex flex-col items-center`}>
@@ -78,7 +162,10 @@ const Index = () => {
 						</div>
 					</>
 				) : (
-					<>
+					<form
+						onSubmit={submitHandler}
+						className='w-full flex flex-col items-center'
+					>
 						<h1 className='title'>
 							{page === 'email-signin' ? 'Sign in' : 'New email account'}
 						</h1>
@@ -146,16 +233,28 @@ const Index = () => {
 							containerClasses='w-full max-w-lg'
 						/>
 						<button
-							className={`flex w-full items-center justify-center button-green max-w-lg py-2 mt-2 ${
+							className={`flex w-full items-center justify-center button-green max-w-lg py-2 mt-2 overflow-hidden ${
 								!email.isValid ||
 								!password.isValid ||
 								(page === 'email-signup' && !name.isValid)
 									? 'disabled'
 									: ''
 							}`}
-							onClick={() => setPage(prev => prev + 1)}
+							type='submit'
+							// onClick={() => setPage(prev => prev + 1)}
 						>
-							{page === 'email-signin' ? 'Sign in' : 'Sign up'}
+							{loading ? (
+								<div style={{ animation: 'loading-spin 2s linear infinite' }}>
+									<SVG
+										name='loading'
+										classes='fill-current text-white w-6 h-6'
+									/>
+								</div>
+							) : page === 'email-signin' ? (
+								'Sign in'
+							) : (
+								'Sign up'
+							)}
 						</button>
 						<div className='w-full max-w-lg'>
 							<button
@@ -169,7 +268,7 @@ const Index = () => {
 								Back
 							</button>
 						</div>
-					</>
+					</form>
 				)}
 			</div>
 		</PageLayout>
