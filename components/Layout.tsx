@@ -6,6 +6,7 @@ import { useAppSelector } from '../redux/hooks';
 import { ChessBoard } from './ChessBoard';
 import ChatBox from './ChatBox';
 import UserFeedback from './UserFeedback';
+import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
 interface LayoutProps {
 	children: React.ReactNode;
@@ -13,6 +14,7 @@ interface LayoutProps {
 
 const Layout = (props: LayoutProps) => {
 	setScreenDimensions();
+	useFirebaseAuth();
 	const { screenIsHorizontal, chessboardWidth } = useAppSelector(
 		state => state.utils
 	);

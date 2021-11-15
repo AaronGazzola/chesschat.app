@@ -8,4 +8,6 @@ export interface AuthState {
 	};
 	success?: string | null;
 	isAuth?: boolean;
+	userName?: string;
+	loading: boolean;
 }

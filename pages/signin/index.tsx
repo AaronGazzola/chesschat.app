@@ -17,14 +17,15 @@ import {
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { authError, authSuccess } from '../../redux/auth/auth.slice';
 import { useRouter } from 'next/dist/client/router';
-import useFirebase from '../../hooks/useFirebase';
 
 const Index = () => {
-	const { auth } = useFirebase();
-	const { isAuth } = useAppSelector(state => state.auth);
+	const auth = getAuth();
 	const database = getDatabase();
 	const router = useRouter();
 	const dispatch = useAppDispatch();
+	const { isAuth, loading: authIsLoading } = useAppSelector(
+		state => state.auth
+	);
 	const [page, setPage] = useState<'select' | 'email-signup' | 'email-signin'>(
 		'select'
 	);
@@ -96,7 +97,6 @@ const Index = () => {
 				await set(ref(database, `users/${user?.uid}/name`), name.value);
 				dispatch(authSuccess(`Welcome ${name.value}!`));
 			} catch (error) {
-				console.log(error);
 				dispatch(authError(error));
 			} finally {
 				setLoading(false);
@@ -126,8 +126,8 @@ const Index = () => {
 
 	// redirect to profile if logged in
 	useEffect(() => {
-		if (auth.currentUser || isAuth) router.push('/profile');
-	}, [auth, isAuth, router]);
+		if (isAuth && !authIsLoading) router.push('/profile');
+	}, [isAuth, authIsLoading, router]);
 
 	return (
 		<PageLayout>
@@ -135,7 +135,7 @@ const Index = () => {
 				{page === 'select' ? (
 					<>
 						<h1 className='title'>Sign in</h1>
-						<div className='flex flex-col w-full max-w-xs p-2'>
+						<div className='flex flex-col flex-nowrap w-full max-w-xs p-2'>
 							<button
 								className='button-blue w-full flex justify-between py-2 mb-2'
 								onClick={() => setPage('email-signin')}

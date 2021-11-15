@@ -5,12 +5,12 @@ import { toggleChatIsOpen } from '../redux/utils/utils.slice';
 import { useIsTouch } from '../hooks/useIsTouch';
 import Link from 'next/link';
 import { useRouter } from 'next/dist/client/router';
-import useFirebase from '../hooks/useFirebase';
+import { getAuth } from '@firebase/auth';
 
 const NavBar = () => {
 	const router = useRouter();
 	const dispatch = useAppDispatch();
-	const { auth } = useFirebase();
+	const auth = getAuth();
 	const {
 		screenWidth,
 		screenHeight,

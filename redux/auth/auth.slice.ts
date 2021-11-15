@@ -1,7 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthState } from './auth.interface';
 
-const initialState: AuthState = {};
+const initialState: AuthState = {
+	loading: true
+};
 
 const gameSlice = createSlice({
 	name: 'utils',
@@ -19,11 +21,23 @@ const gameSlice = createSlice({
 		},
 		setIsAuth(state, action) {
 			state.isAuth = action.payload;
+		},
+		setUserName(state, action) {
+			state.userName = action.payload;
+		},
+		setAuthLoading(state, action) {
+			state.loading = action.payload;
 		}
 	}
 });
 
-export const { clearAuthFeedback, authSuccess, authError, setIsAuth } =
-	gameSlice.actions;
+export const {
+	clearAuthFeedback,
+	authSuccess,
+	authError,
+	setIsAuth,
+	setUserName,
+	setAuthLoading
+} = gameSlice.actions;
 
 export default gameSlice.reducer;
