@@ -17,12 +17,15 @@ import {
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { authError, authSuccess } from '../../redux/auth/auth.slice';
 import { useRouter } from 'next/dist/client/router';
+import useCheckNameAvailability from '../../hooks/useCheckNameAvailability';
 
 const Index = () => {
 	const auth = getAuth();
 	const database = getDatabase();
 	const router = useRouter();
 	const dispatch = useAppDispatch();
+	const { checkNameAvailability, nameAvailability, loadingNames } =
+		useCheckNameAvailability();
 	const { isAuth, loading: authIsLoading } = useAppSelector(
 		state => state.auth
 	);
@@ -58,6 +61,7 @@ const Index = () => {
 				: id === 'password'
 				? value.length >= 6
 				: !!value;
+		if (id === 'name') checkNameAvailability(value);
 		setFormState(prev => ({
 			...prev,
 			[id]: {
@@ -175,12 +179,14 @@ const Index = () => {
 									label='Name'
 									value={name.value}
 									validation
-									isValid={name.isValid}
+									isValid={name.isValid && nameAvailability === 'available'}
 									isTouched={name.isTouched}
 									id='name'
 									helperText={
 										!name.isValid && name.isTouched
 											? 'Please enter a unique user name'
+											: nameAvailability !== 'available' && name.isTouched
+											? 'A user with that name already exists'
 											: ''
 									}
 									fullWidth
@@ -188,7 +194,23 @@ const Index = () => {
 									touchHandler={touchHandler}
 								/>
 								<div className='w-10 h-10 mt-1 flex items-center justify-center overflow-hidden'>
-									<SVG name='circle' classes='fill-current text-gray-500' />
+									{loadingNames ? (
+										<div
+											className='overflow-hidden'
+											style={{ animation: 'loading-spin 2s linear infinite' }}
+										>
+											<SVG name='loading' classes='fill-current text-blue' />
+										</div>
+									) : nameAvailability === 'unknown' ? (
+										<SVG name='circle' classes='fill-current text-gray-500' />
+									) : nameAvailability === 'unavailable' ? (
+										<SVG name='close' classes='fill-current text-red-700' />
+									) : (
+										<SVG
+											name='checkMark'
+											classes='fill-current text-green-600'
+										/>
+									)}
 								</div>
 							</div>
 						)}
@@ -234,7 +256,8 @@ const Index = () => {
 							className={`flex w-full items-center justify-center button-green max-w-lg py-2 mt-2 overflow-hidden ${
 								!email.isValid ||
 								!password.isValid ||
-								(page === 'email-signup' && !name.isValid)
+								(page === 'email-signup' &&
+									(!name.isValid || nameAvailability !== 'available'))
 									? 'disabled'
 									: ''
 							}`}

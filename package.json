@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "@mui/styled-engine-sc": "^5.0.3",
+    "@react-query-firebase/database": "^0.2.1",
     "@reduxjs/toolkit": "^1.6.2",
     "firebase": "^9.2.0",
     "next": "11.1.2",
     "next-pwa": "^5.4.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-query": "^3.32.3",
     "react-redux": "^7.2.5",
     "styled-components": "^5.3.3"
   },

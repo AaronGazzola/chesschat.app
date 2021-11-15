@@ -22,6 +22,7 @@ const Index = () => {
 		try {
 			await signOut(auth);
 			dispatch(authSuccess('You are now signed out'));
+			router.push('/signin');
 		} catch (error) {
 			dispatch(authError(error));
 		} finally {

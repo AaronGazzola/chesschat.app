@@ -5,6 +5,9 @@ import { Provider } from 'react-redux';
 import { store } from '../redux/store';
 import '../styles/animations.css';
 import { initializeApp } from '@firebase/app';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient();
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyC04HBdLvuWLCliB6bFxhT2ul2J7LzRxjE',
@@ -21,9 +24,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 	initializeApp(firebaseConfig);
 	return (
 		<Provider store={store}>
-			<Layout>
-				<Component {...pageProps} />
-			</Layout>
+			<QueryClientProvider client={queryClient}>
+				<Layout>
+					<Component {...pageProps} />
+				</Layout>
+			</QueryClientProvider>
 		</Provider>
 	);
 }
