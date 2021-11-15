@@ -14,13 +14,14 @@ import {
 	getRedirectResult,
 	signOut
 } from 'firebase/auth';
-import { useAppDispatch } from '../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { authError, authSuccess } from '../../redux/auth/auth.slice';
 import { useRouter } from 'next/dist/client/router';
 import useFirebase from '../../hooks/useFirebase';
 
 const Index = () => {
 	const { auth } = useFirebase();
+	const { isAuth } = useAppSelector(state => state.auth);
 	const database = getDatabase();
 	const router = useRouter();
 	const dispatch = useAppDispatch();
@@ -125,11 +126,8 @@ const Index = () => {
 
 	// redirect to profile if logged in
 	useEffect(() => {
-		if (auth.currentUser) router.push('/profile');
-	}, []);
-	onAuthStateChanged(auth, user => {
-		if (user) router.push('/profile');
-	});
+		if (auth.currentUser || isAuth) router.push('/profile');
+	}, [auth, isAuth, router]);
 
 	return (
 		<PageLayout>

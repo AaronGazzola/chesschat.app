@@ -16,10 +16,14 @@ const gameSlice = createSlice({
 		},
 		authError(state, action) {
 			state.error = action.payload;
+		},
+		setIsAuth(state, action) {
+			state.isAuth = action.payload;
 		}
 	}
 });
 
-export const { clearAuthFeedback, authSuccess, authError } = gameSlice.actions;
+export const { clearAuthFeedback, authSuccess, authError, setIsAuth } =
+	gameSlice.actions;
 
 export default gameSlice.reducer;

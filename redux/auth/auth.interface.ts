@@ -1,3 +1,5 @@
+import { User } from '@firebase/auth';
+
 export interface AuthState {
 	error?: null | {
 		title?: string;
@@ -5,4 +7,5 @@ export interface AuthState {
 		retryTrigger?: string;
 	};
 	success?: string | null;
+	isAuth?: boolean;
 }

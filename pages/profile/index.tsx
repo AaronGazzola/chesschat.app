@@ -5,11 +5,12 @@ import PageLayout from '../../components/PageLayout';
 import SVG from '../../components/SVG';
 import useFirebase from '../../hooks/useFirebase';
 import { authError, authSuccess } from '../../redux/auth/auth.slice';
-import { useAppDispatch } from '../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 
 const Index = () => {
 	const router = useRouter();
 	const dispatch = useAppDispatch();
+	const { isAuth } = useAppSelector(state => state.auth);
 	const { auth } = useFirebase();
 	const [loading, setLoading] = useState<boolean>(false);
 
@@ -28,11 +29,8 @@ const Index = () => {
 
 	// redirect to signin if not logged in
 	useEffect(() => {
-		if (!auth.currentUser) router.push('/signin');
-	}, []);
-	onAuthStateChanged(auth, user => {
-		if (!user) router.push('/signin');
-	});
+		if (!auth.currentUser || !isAuth) router.push('/signin');
+	}, [auth, isAuth, router]);
 
 	return (
 		<PageLayout>

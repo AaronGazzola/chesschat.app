@@ -1,5 +1,7 @@
+import { useAppDispatch } from './../redux/hooks';
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth } from '@firebase/auth';
+import { getAuth, onAuthStateChanged } from '@firebase/auth';
+import { setIsAuth, setUser } from '../redux/auth/auth.slice';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyC04HBdLvuWLCliB6bFxhT2ul2J7LzRxjE',
@@ -13,9 +15,16 @@ const firebaseConfig = {
 };
 
 const useFirebase = () => {
+	const dispatch = useAppDispatch();
 	const apps = getApps();
 	if (!apps.length) initializeApp(firebaseConfig);
+
 	const auth = getAuth();
+
+	onAuthStateChanged(auth, user => {
+		dispatch(setIsAuth(!!user));
+	});
+
 	return { auth };
 };
 
